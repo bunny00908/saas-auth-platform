@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  email     String    @unique
+  password  String
+  name      String
+  role      String    @default("user")
+  createdAt DateTime  @default(now())
+  searches  Search[]
+}
+
+model Search {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  type      String   // mobile or vehicle
+  query     String
+  result    Json
+  source    String   // api name
+  createdAt DateTime @default(now())
+}
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  name      String
+  rateLimit Int      @default(10)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
